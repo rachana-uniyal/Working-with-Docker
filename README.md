@@ -1,10 +1,6 @@
 # Working-with-Docker
 
-Here's the given text converted to Markdown:
-
----
-
-# Demo App - Developing with Docker
+## Demo App 
 
 This demo app shows a simple user profile app set up using:
 
@@ -14,7 +10,7 @@ This demo app shows a simple user profile app set up using:
 
 All components are Docker-based.
 
-## With Docker
+## Use Docker for local development
 
 ### To start the application
 
@@ -56,7 +52,7 @@ node server.js
 
 [http://localhost:3000](http://localhost:3000)
 
-## With Docker Compose
+## Docker Compose - Run multiple Docker containers
 
 ### To start the application
 
@@ -94,4 +90,63 @@ The dot `.` at the end of the command denotes the location of the Dockerfile.
 
 ---
 
-Please note that Markdown does not support the exact formatting of code blocks in different shells, so the above formatting is a general representation.
+## Dockerize Nodejs application and push to private Docker registry:
+
+1. Install AWS-CLI.
+2. Configure AWS-CLI with your AWS credentials.
+3. Create an ECR repo named "my-app".
+4. Execute the following commands:
+   1. Retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI:
+
+      ```shell
+      aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 732909161122.dkr.ecr.eu-north-1.amazonaws.com
+      ```
+
+      *Note: If you receive an error using the AWS CLI, make sure that you have the latest version of the AWS CLI and Docker installed.*
+
+   2. Build your Docker image using the following command. For information on building a Docker file from scratch, see the instructions [here](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html). You can skip this step if your image is already built:
+
+      ```shell
+      docker build -t my-app .
+      ```
+
+   3. After the build completes, tag your image so you can push the image to this repository:
+
+      ```shell
+      docker tag my-app:latest 732909161122.dkr.ecr.eu-north-1.amazonaws.com/my-app:latest
+      ```
+
+   4. Run the following command to push this image to your newly created AWS repository:
+
+      ```shell
+      docker push 732909161122.dkr.ecr.eu-north-1.amazonaws.com/my-app:latest
+      ```
+
+## Deploy Docker application on a server with Docker Compose:
+
+1. Add the ECR repository URL to the YAML file and open port 3000.
+2. Copy the YAML file to the dev server.
+3. Retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI:
+
+   ```shell
+   aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 732909161122.dkr.ecr.eu-north-1.amazonaws.com
+   ```
+
+4. Run the following command:
+
+   ```shell
+   docker-compose -f docker-compose.yaml up
+   ```
+
+## Persist data with Docker Volumes:
+
+1. Attach the volume in the `docker-compose` file.
+2. To find the volumes, use the command:
+
+   ```shell
+   ls /var/lib/docker/volumes
+   ```
+
+---
+
+
